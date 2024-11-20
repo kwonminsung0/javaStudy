@@ -1,6 +1,7 @@
-package bookTest;
+package bookTest2;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -10,7 +11,7 @@ import oracle.jdbc.driver.DBConversion;
 
 public class BooksMain {
 	public static Scanner scan = new Scanner(System.in);
-	public static final int PRINT = 1, INSERT = 2, UPDATE = 3, DELETE = 4, EXIT = 5;
+	
 
 	public static void main(String[] args) throws SQLException {
 		boolean exitFlag = false;
@@ -19,19 +20,19 @@ public class BooksMain {
 			printMenu();
 			int num = Integer.parseInt(scan.nextLine());
 			switch (num) {
-			case PRINT:
+			case BookMenu.PRINT:
 				booksPrint();
 				break;
-			case INSERT:
+			case BookMenu.INSERT:
 				booksInsert();
 				break;
-			case UPDATE:
+			case BookMenu.UPDATE:
 				booksUpdate();
 				break;
-			case DELETE:
+			case BookMenu.DELETE:
 				booksDelete();
 				break;
-			case EXIT:
+			case BookMenu.EXIT:
 				exitFlag = true;
 				break;
 			default:
@@ -45,26 +46,29 @@ public class BooksMain {
 	private static void booksDelete() throws SQLException {
 		// Connection
 		Connection con = null;
-		Statement stmt = null;
+		PreparedStatement pstmt = null;
 
 		// 1 Load,2 connect
 		con = DBConnection.dbCon();
 		// 3.statement
 		System.out.print("삭제할번호>>");
 		int no = Integer.parseInt(scan.nextLine());
-		stmt = con.createStatement();
-		int result = stmt.executeUpdate("DELETE FROM BOOKS WHERE ID = " + no);
+		
+		pstmt = con.prepareStatement("DELETE FROM BOOKS WHERE ID = ? ");
+		pstmt.setInt(1, no);
+
+		int result = pstmt.executeUpdate();
 		// 4.내용이 잘 입력이 되었는지 check
 		System.out.println((result != 0) ? "삭제성공" : "삭제실패");
 		// 6.sql 객체 반남
-		DBConnection.dbClose(con, stmt);
+		DBConnection.dbClose(con, pstmt);
 	}
 
 	// 수정
 	private static void booksUpdate() throws SQLException {
 		// Connection
 		Connection con = null;
-		Statement stmt = null;
+		PreparedStatement pstmt = null;
 
 		// 1 Load,2 connect
 		con = DBConnection.dbCon();
@@ -72,14 +76,19 @@ public class BooksMain {
 		//수정할데이터를 입력
 		Books books = new Books(3, "JAVA java", "kdj", "2024", 33000);
 		
-		stmt = con.createStatement();
-		int result = stmt.executeUpdate("UPDATE BOOKS SET  TITLE = '"+
-				books.getTitle()+"', PUBLISHER = '"+books.getPublisher()+"', YEAR = '"+
-				books.getYear()+"' , PRICE = "+books.getPrice()+" WHERE ID = "+books.getId()+"");
+		
+		pstmt = con.prepareStatement("UPDATE BOOKS SET TITLE = ?, PUBLISHER = ?, YEAR = ?, PRICE = ? WHERE ID = ? ");
+		pstmt.setString(1, books.getTitle());
+		pstmt.setString(2, books.getPublisher());
+		pstmt.setString(3, books.getYear());
+		pstmt.setInt(4, books.getPrice());
+		pstmt.setInt(5, books.getId());
+		
+		int result = pstmt.executeUpdate();
 		// 4.내용이 잘 입력이 되었는지 check
 		System.out.println((result != 0) ? "수정성공" : "수정실패");
 		// 6.sql 객체 반남
-		DBConnection.dbClose(con, stmt);
+		DBConnection.dbClose(con, pstmt);
 
 	}
 
@@ -87,20 +96,25 @@ public class BooksMain {
 	private static void booksInsert() throws SQLException {
 		// Connection
 		Connection con = null;
-		Statement stmt = null;
+		PreparedStatement pstmt = null;
 
 		// 1 Load,2 connect
 		con = DBConnection.dbCon();
 		// 3.statement
 		Books books = new Books(0, "Head First JAVA", "kdj", "2008", 23000);
+		//=============================================================================================
 		String publisher = "kdj";
-		stmt = con.createStatement();
-		int result = stmt.executeUpdate("INSERT INTO books VALUES " + "(BOOKS_ID_SEQ.nextval,'" + books.getTitle()
-				+ "','" + books.getPublisher() + "','" + books.getYear() + "'," + books.getPrice() + ")");
+		pstmt = con.prepareStatement("INSERT INTO books VALUES (books_id_seq.nextval, ?, ?, ?, ?)");
+		pstmt.setString(1, books.getTitle());
+		pstmt.setString(2, books.getPublisher());
+		pstmt.setString(3, books.getYear());
+		pstmt.setInt(4, books.getPrice());
+		
+		int result = pstmt.executeUpdate();
 		// 4.내용이 잘 입력이 되었는지 check
 		System.out.println((result != 0) ? "입력성공" : "입력실패");
 		// 6.sql 객체 반남
-		DBConnection.dbClose(con, stmt);
+		DBConnection.dbClose(con, pstmt);
 
 	}
 
