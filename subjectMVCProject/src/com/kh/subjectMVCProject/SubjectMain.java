@@ -1,4 +1,5 @@
 package com.kh.subjectMVCProject;
+
 import java.sql.SQLException;
 import java.util.Scanner;
 import com.kh.subjectMVCProject.controller.LessonRegisterManager;
@@ -11,15 +12,17 @@ import com.kh.subjectMVCProject.view.MenuViewer;
 import com.kh.subjectMVCProject.view.STUDENT_CHOICE;
 import com.kh.subjectMVCProject.view.SUBJECT_CHOICE;
 import com.kh.subjectMVCProject.view.TRAINEE_CHOICE;
+
 public class SubjectMain {
-	public static Scanner sc = new Scanner(System.in); 
+	public static Scanner sc = new Scanner(System.in);
+
 	public static void main(String[] args) {
 		int no;
-		boolean exitFlag = false; 
+		boolean exitFlag = false;
 		while (!exitFlag) {
 			try {
 				MenuViewer.mainMenuView();
-				no = Integer.parseInt(sc.nextLine()); 
+				no = Integer.parseInt(sc.nextLine());
 				switch (no) {
 				case MENU_CHOICE.SUBJECT:
 					subjectMenu();
@@ -35,51 +38,58 @@ public class SubjectMain {
 					break;
 				case MENU_CHOICE.EXIT:
 					System.out.println("프로그램을 종료합니다.");
-					exitFlag = true; 
-					break; 
+					exitFlag = true;
+					break;
 				default:
 					System.out.println("해당 메뉴 번호만 입력하세요.");
 				}
 			} catch (Exception e) {
 				System.out.println("\n입력에 오류가 있습니다.\n프로그램을 다시 시작하세요.");
 			}
-		}//end of file
+		} // end of file
 	}
-	//수강신청정보
+
+	// 수강신청정보
 	private static void traineeMenu() {
 		int no;
-		TraineeRegisterManager trm = new TraineeRegisterManager();  
+		TraineeRegisterManager trm = new TraineeRegisterManager();
+
 		MenuViewer.traineeMenuView();
 		no = Integer.parseInt(sc.nextLine());
 		switch (no) {
 		case TRAINEE_CHOICE.INSERT:
 			System.out.println("");
-			//trm.insertManager();
+			trm.insertManager();
 			break;
 		case TRAINEE_CHOICE.UPDATE:
 			System.out.println("");
-//			studnetManager.studnetUpdate();
+			trm.updateManager();
 			break;
 		case TRAINEE_CHOICE.LIST:
 			System.out.println("");
-//			studnetManager.studnetTotalList();
+			trm.selectManager();
 			break;
 		case TRAINEE_CHOICE.DELETE:
 			System.out.println("");
-//			studnetManager.studnetTotalList();
+			trm.deleteManager();
+			break;
+		case TRAINEE_CHOICE.JOIN_LIST:
+			System.out.println("");
+			trm.totalSelectManager();
 			break;
 		case TRAINEE_CHOICE.MAIN:
 			return;
 		default:
 			System.out.println("해당 메뉴 번호만 입력하세요.");
 		}
-		
+
 	}
-	//과목정보
+
+	// 과목정보
 	private static void lessonMenu() {
 		int no;
-		LessonRegisterManager lrm = new LessonRegisterManager();   
-		
+		LessonRegisterManager lrm = new LessonRegisterManager();
+
 		MenuViewer.lessonMenuView();
 		no = Integer.parseInt(sc.nextLine());
 		switch (no) {
@@ -108,12 +118,14 @@ public class SubjectMain {
 		default:
 			System.out.println("해당 메뉴 번호만 입력하세요.");
 		}
-		
+
 	}
-	//학과정보
+
+	// 학과정보
 	private static void subjectMenu() throws SQLException {
 		int no;
-		SubjectRegisterManager srm = new SubjectRegisterManager();  
+		SubjectRegisterManager srm = new SubjectRegisterManager();
+
 		MenuViewer.subjectMenuView();
 		no = Integer.parseInt(sc.nextLine());
 		switch (no) {
@@ -143,10 +155,12 @@ public class SubjectMain {
 			System.out.println("해당 메뉴 번호만 입력하세요.");
 		}
 	}
-	//학생정보
+
+	// 학생정보
 	private static void studentMenu() throws SQLException {
 		int no;
-		StudentRegisterManager srm = new StudentRegisterManager(); 
+		StudentRegisterManager srm = new StudentRegisterManager();
+
 		MenuViewer.studentMenuView();
 		no = Integer.parseInt(sc.nextLine());
 		switch (no) {

@@ -72,6 +72,7 @@ public class LessonRegisterManager {
 			System.out.println(no + "번호 삭제 실패하였습니다.");
 		}
 	}
+	
 	//과목수정(update)
 	public void updateManager() {
 		LessonDAO ldao = new LessonDAO();
