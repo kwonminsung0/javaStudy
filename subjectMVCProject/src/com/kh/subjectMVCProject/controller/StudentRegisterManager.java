@@ -1,29 +1,29 @@
 package com.kh.subjectMVCProject.controller;
 
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 
+import com.kh.subjectMVCProject.model.LandPriceVO;
 import com.kh.subjectMVCProject.model.StudentAllVO;
 import com.kh.subjectMVCProject.model.StudentVO;
-import com.kh.subjectMVCProject.model.SubjectVO;
 
 public class StudentRegisterManager {
 	public static Scanner sc = new Scanner(System.in);
 
 	// 전체 학생리스트를 출력요청
-	public void selectManager() throws SQLException {
+	public void selectManager() {
 		StudentDAO sdao = new StudentDAO();
-		ArrayList<StudentVO> studentList = new ArrayList<StudentVO>();
-		studentList = sdao.studentSelect();
+		StudentVO svo = new StudentVO();
+		ArrayList<StudentVO> studentList  = sdao.studentSelect(svo);
 
-		if (studentList == null) {
+		if (studentList.size() != 0) {
+			printStudentList(studentList);
+		}else {
 			System.out.println("데이터가 존재하지 않습니다.");
 			return;
 		}
-		printStudentList(studentList);
 	}
 
 	// 전체 학생리스트를 출력요청
@@ -40,10 +40,10 @@ public class StudentRegisterManager {
 		printStudentList(studentList);
 	}
 
-	public void insertManager() throws SQLException {
+	public void insertManager() {
 		SubjectDAO subjectDao = new SubjectDAO();
 		StudentDAO studentDao = new StudentDAO();
-		ArrayList<SubjectVO> subjectList = null;
+		ArrayList<LandPriceVO> subjectList = null;
 		StudentVO svo = new StudentVO();
 
 		System.out.println("학생 정보 입력");
@@ -119,7 +119,9 @@ public class StudentRegisterManager {
 		// sd.getStudent(svo.getSd_id(), svo.getSd_passwd());
 	}
 
-	public void updateManager() throws SQLException {
+	public void updateManager() {
+		StudentDAO sdao = new StudentDAO();
+		StudentVO svo = new StudentVO();
 		System.out.print("수정할 학생의 번호를 입력하세요: ");
 		int no = Integer.parseInt(sc.nextLine());
 		System.out.print("새로운 이름을 입력하세요: ");
@@ -131,8 +133,7 @@ public class StudentRegisterManager {
 		System.out.print("새로운 수학 점수를 입력하세요: ");
 		int mat = Integer.parseInt(sc.nextLine());
 
-		StudentVO svo = new StudentVO();
-		boolean successFlag = StudentDAO.studentUpdate(svo);
+		boolean successFlag = sdao.studentUpdate(svo);
 
 		if (successFlag == true) {
 			System.out.println("입력처리 성공");
@@ -141,12 +142,13 @@ public class StudentRegisterManager {
 		}
 	}
 
-	public void deleteManager() throws SQLException {
+	public void deleteManager() {
+		StudentDAO sdao = new StudentDAO();
+		StudentVO svo = new StudentVO();
 		System.out.print("삭제할 학생 번호를 입력하세요: ");
 		int no = Integer.parseInt(sc.nextLine());
-		StudentVO svo = new StudentVO();
 		svo.setNo(no);
-		boolean successFlag = StudentDAO.studentDelete(svo);
+		boolean successFlag = sdao.studentDelete(svo);
 
 		if (successFlag == true) {
 			System.out.println("삭제처리 성공");
@@ -155,10 +157,16 @@ public class StudentRegisterManager {
 		}
 	}
 
-	public void sortManager() throws SQLException {
-		ArrayList<StudentVO> studentList = null;
-		studentList = StudentDAO.studentSort();
-		printStudentList(studentList);
+	public void sortManager() {
+		StudentDAO sdao = new StudentDAO();
+		StudentVO svo = new StudentVO();
+		
+		ArrayList<StudentVO> studentList = sdao.studentSort(svo);
+		if(studentList.size() != 0) {
+			printStudentList(studentList);
+		}else {
+			System.out.println("데이터가 없습니다.");
+		}
 	}
 
 	public void selectAllManager() {

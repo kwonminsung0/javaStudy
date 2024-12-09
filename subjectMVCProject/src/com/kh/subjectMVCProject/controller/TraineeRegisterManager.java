@@ -10,7 +10,7 @@ public class TraineeRegisterManager {
 	public static Scanner sc = new Scanner(System.in);
 
 	// 전체 리스트를 출력요청(조인)
-	public static void totalSelectManager() {
+	public void totalSelectManager() {
 		TraineeDAO tdao = new TraineeDAO();
 		ArrayList<TraineeVO> traineeList = new ArrayList<TraineeVO>();
 
@@ -22,7 +22,7 @@ public class TraineeRegisterManager {
 		printTraineeAllList(traineeList);
 	}
 
-	public static void selectManager() {
+	public void selectManager() {
 		TraineeDAO tdao = new TraineeDAO();
 		ArrayList<TraineeVO> traineeList = new ArrayList<TraineeVO>();
 		traineeList = tdao.traineeSelect(new TraineeVO());
@@ -34,7 +34,7 @@ public class TraineeRegisterManager {
 		printTraineeList(traineeList);
 	}
 
-	public static void insertManager() {
+	public void insertManager() {
 		TraineeDAO tdao = new TraineeDAO();
 		// 3.statement
 		// student 검색기능추가
@@ -63,7 +63,7 @@ public class TraineeRegisterManager {
 		}
 	}
 
-	public static void updateManager() {
+	public void updateManager() {
 		TraineeDAO tdao = new TraineeDAO();
 
 		// Trainee 테이블 전체내용을 보여준다.
@@ -97,7 +97,7 @@ public class TraineeRegisterManager {
 		}
 	}
 
-	public static void deleteManager() {
+	public void deleteManager() {
 		TraineeVO tvo = new TraineeVO();
 		TraineeDAO tdao = new TraineeDAO();
 

@@ -14,63 +14,62 @@ import com.kh.subjectMVCProject.model.StudentVO;
 
 public class StudentDAO {
 
-	public static final String STUDENT_SELECT = "SELECT * FROM STUDENT";
-	public static final String STUDENT_SELECT_SEARCH = "SELECT NUM, NAME, EMAIL FROM STUDENT WHERE NAME = ?";
-	public static final String STUDENT_INSERT = "insert into student values(student_seq.nextval, ?, ?, ?, ?, ?, ?, ?, ?, ?, sysdate)";
-	public static final String STUDENT_CALL_RANK_PROC = "{call STUDENT_RANK_PROC()}";
-	public static final String STUDENT_UPDATE = "UPDATE STUDENT SET NAME = ?, KOR = ?, ENG = ?, MAT = ? WHERE NO = ?";
-	public static final String STUDENT_DELETE = "DELETE FROM STUDENT WHERE NO = ?";
-	public static final String STUDENT_SORT = "SELECT *FROM STUDENT ORDER BY RANK";
-	public static final String STUDENT_ID_CHECK = "select COUNT(*) AS COUNT from student where id = ?";
-	public static final String STUDENT_NUM_COUNT = "select LPAD(count(*)+1,4,'0') as TOTAL_COUNT from student where s_num = ?";
-	private static final String STUDENT_SUBJECT_JOIN_SELECT = "SELECT STU.NO, STU.NUM, STU.NAME, STU.ID,PASSWD,STU.S_NUM,SUB.NAME AS SUBJECT_NAME ,BIRTHDAY,PHONE,ADDRESS, EMAIL, SDATE\r\n"
+	public final String STUDENT_SELECT = "SELECT * FROM STUDENT";
+	public final String STUDENT_SELECT_SEARCH = "SELECT NUM, NAME, EMAIL FROM STUDENT WHERE NAME = ?";
+	public final String STUDENT_INSERT = "insert into student values(student_seq.nextval, ?, ?, ?, ?, ?, ?, ?, ?, ?, sysdate)";
+	public final String STUDENT_CALL_RANK_PROC = "{call STUDENT_RANK_PROC()}";
+	public final String STUDENT_UPDATE = "UPDATE STUDENT SET NAME = ?, KOR = ?, ENG = ?, MAT = ? WHERE NO = ?";
+	public final String STUDENT_DELETE = "DELETE FROM STUDENT WHERE NO = ?";
+	public final String STUDENT_SORT = "SELECT *FROM STUDENT ORDER BY RANK";
+	public final String STUDENT_ID_CHECK = "select COUNT(*) AS COUNT from student where id = ?";
+	public final String STUDENT_NUM_COUNT = "select LPAD(count(*)+1,4,'0') as TOTAL_COUNT from student where s_num = ?";
+	public final String STUDENT_SUBJECT_JOIN_SELECT = "SELECT STU.NO, STU.NUM, STU.NAME, STU.ID,PASSWD,STU.S_NUM,SUB.NAME AS SUBJECT_NAME ,BIRTHDAY,PHONE,ADDRESS, EMAIL, SDATE\r\n"
 			+ "FROM STUDENT STU INNER JOIN SUBJECT SUB ON STU.S_NUM = SUB.NUM ";
 
-	public static ArrayList<StudentVO> studentSelect() {
-		Connection con = null;
-		Statement stmt = null;
-		ResultSet rs = null;
-		ArrayList<StudentVO> studentList = new ArrayList<StudentVO>();
-		con = DBUtility.dbCon();
-		try {
-			stmt = con.createStatement();
-			rs = stmt.executeQuery(STUDENT_SELECT);
-			if (rs.next()) {
-				do {
-					int no = rs.getInt("NO");
-					String num = rs.getString("NUM");
-					String name = rs.getString("NAME");
-					String id = rs.getString("ID");
-					String passwd = rs.getString("PASSWD");
-					String s_num = rs.getString("S_NUM");
-					String birthday = rs.getString("BIRTHDAY");
-					String phone = rs.getString("PHONE");
-					String address = rs.getString("ADDRESS");
-					String email = rs.getString("EMAIL");
-					Date sdate = rs.getDate("SDATE");
-					StudentVO stu = new StudentVO(no, num, name, id, passwd, s_num, birthday, phone, address, email,
-							sdate);
-					studentList.add(stu);
-				} while (rs.next());
-			} else {
-				studentList = null;
-			}
-		} catch (SQLException e) {
-			System.out.println(e.toString());
-		} finally {
-			DBUtility.dbClose(con, stmt, rs);
-		}
-		return studentList;
-	}
-
-	// 이름검색
-	public static ArrayList<StudentVO> studentNameSelect(String nameValue) {
+	public ArrayList<StudentVO> studentSelect(StudentVO svo) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		ArrayList<StudentVO> studentList = new ArrayList<StudentVO>();
-		con = DBUtility.dbCon();
+		
 		try {
+			con = DBUtility.dbCon();
+			pstmt = con.prepareStatement(STUDENT_SELECT);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				int no = rs.getInt("NO");
+				String num = rs.getString("NUM");
+				String name = rs.getString("NAME");
+				String id = rs.getString("ID");
+				String passwd = rs.getString("PASSWD");
+				String s_num = rs.getString("S_NUM");
+				String birthday = rs.getString("BIRTHDAY");
+				String phone = rs.getString("PHONE");
+				String address = rs.getString("ADDRESS");
+				String email = rs.getString("EMAIL");
+				Date sdate = rs.getDate("SDATE");
+				StudentVO stu = new StudentVO(no, num, name, id, passwd, s_num, birthday, phone, address, email,
+						sdate);
+				studentList.add(stu);
+			}
+		} catch (SQLException e) {
+			System.out.println(e.toString());
+		} finally {
+			DBUtility.dbClose(con, pstmt, rs);
+		}
+
+		return studentList;
+	}
+
+	// 이름검색
+	public ArrayList<StudentVO> studentNameSelect(String nameValue) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		ArrayList<StudentVO> studentList = new ArrayList<StudentVO>();
+		
+		try {
+			con = DBUtility.dbCon();
 			pstmt = con.prepareStatement(STUDENT_SELECT_SEARCH);
 			pstmt.setString(1, nameValue);
 			rs = pstmt.executeQuery();
@@ -96,7 +95,7 @@ public class StudentDAO {
 		return studentList;
 	}
 
-	public static boolean studentInsert(StudentVO svo) {
+	public boolean studentInsert(StudentVO svo) {
 		// Conection
 		boolean successFlag = false;
 		Connection con = null;
@@ -125,70 +124,79 @@ public class StudentDAO {
 		return successFlag;
 	}
 
-	public static boolean studentUpdate(StudentVO svo) throws SQLException {
+	public boolean studentUpdate(StudentVO svo) {
 		boolean successFlag = false;
 		Connection con = null;
 		CallableStatement cstmt = null;
 		PreparedStatement pstmt = null;
 
-		con = DBUtility.dbCon();
-		pstmt = con.prepareStatement(STUDENT_UPDATE);
-		pstmt.setString(1, svo.getName());
-
-		int result1 = pstmt.executeUpdate();
-		cstmt = con.prepareCall(STUDENT_CALL_RANK_PROC);
-		int result2 = cstmt.executeUpdate();
-
-		successFlag = (result1 != 0 && result2 != 0) ? true : false;
-
-		DBUtility.dbClose(con, pstmt, cstmt);
+		try {
+			con = DBUtility.dbCon();
+			pstmt = con.prepareStatement(STUDENT_UPDATE);
+			pstmt.setString(1, svo.getName());
+			int result1 = pstmt.executeUpdate();
+			cstmt = con.prepareCall(STUDENT_CALL_RANK_PROC);
+			int result2 = cstmt.executeUpdate();
+			successFlag = (result1 != 0 && result2 != 0) ? true : false;
+		} catch (SQLException e) {
+			System.out.println(e.toString());
+		} finally {
+			DBUtility.dbClose(con, pstmt, cstmt);
+		}
 		return successFlag;
 	}
 
-	public static boolean studentDelete(StudentVO svo) throws SQLException {
-		boolean successFlag = false;
+	public boolean studentDelete(StudentVO svo) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
+		boolean successFlag = false;
 
-		con = DBUtility.dbCon();
-		pstmt = con.prepareStatement(STUDENT_DELETE);
-		pstmt.setInt(1, svo.getNo());
-		int result = pstmt.executeUpdate();
-		successFlag = (result != 0) ? true : false;
-
-		DBUtility.dbClose(con, pstmt);
+		try {
+			con = DBUtility.dbCon();
+			pstmt = con.prepareStatement(STUDENT_DELETE);
+			pstmt.setInt(1, svo.getNo());
+			int result = pstmt.executeUpdate();
+			successFlag = (result != 0) ? true : false;
+		} catch (SQLException e) {
+			System.out.println(e.toString());
+		} finally {
+			DBUtility.dbClose(con, pstmt);
+		}
 		return successFlag;
 	}
 
-	public static ArrayList<StudentVO> studentSort() throws SQLException {
+	public ArrayList<StudentVO> studentSort(StudentVO svo) {
 		Connection con = null;
+		PreparedStatement pstmt = null;
 		Statement stmt = null;
 		ResultSet rs = null;
 		ArrayList<StudentVO> studentList = new ArrayList<StudentVO>();
 
-		con = DBUtility.dbCon();
-		stmt = con.createStatement();
-		rs = stmt.executeQuery(STUDENT_SORT);
-
-		if (rs.next()) {
-			do {
+		try {
+			con = DBUtility.dbCon();
+			pstmt = con.prepareStatement(STUDENT_SORT);
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
 				int no = rs.getInt("NO");
+				String num = rs.getString("NUM");
 				String name = rs.getString("NAME");
-				int kor = rs.getInt("KOR");
-				int eng = rs.getInt("ENG");
-				int mat = rs.getInt("MAT");
-				int total = rs.getInt("TOTAL");
-				int ave = rs.getInt("AVE");
-				int rank = rs.getInt("RANK");
-
-				StudentVO stu = new StudentVO();
+				String id = rs.getString("ID");
+				String passwd = rs.getString("PASSWD");
+				String s_num = rs.getString("S_NUM");
+				String birthday = rs.getString("BIRTHDAY");
+				String phone = rs.getString("PHONE");
+				String address = rs.getString("ADDRESS");
+				String email = rs.getString("EMAIL");
+				Date sdate = rs.getDate("SDATE");
+				StudentVO stu = new StudentVO(no, num, name, id, passwd, s_num, birthday, phone, address, email,
+						sdate);
 				studentList.add(stu);
-			} while (rs.next());
-		} else {
-			studentList = null;
+			}
+		} catch (SQLException e) {
+			System.out.println(e.toString());
+		} finally {
+			DBUtility.dbClose(con, stmt, rs);
 		}
-
-		DBUtility.dbClose(con, stmt, rs);
 		return studentList;
 	}
 

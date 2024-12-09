@@ -1,6 +1,5 @@
 package com.kh.subjectMVCProject;
 
-import java.sql.SQLException;
 import java.util.Scanner;
 import com.kh.subjectMVCProject.controller.LessonRegisterManager;
 import com.kh.subjectMVCProject.controller.StudentRegisterManager;
@@ -50,7 +49,7 @@ public class SubjectMain {
 	}
 
 	// 수강신청정보
-	private static void traineeMenu() {
+	public static void traineeMenu() {
 		int no;
 		TraineeRegisterManager trm = new TraineeRegisterManager();
 
@@ -86,7 +85,7 @@ public class SubjectMain {
 	}
 
 	// 과목정보
-	private static void lessonMenu() {
+	public static void lessonMenu() {
 		int no;
 		LessonRegisterManager lrm = new LessonRegisterManager();
 
@@ -122,7 +121,7 @@ public class SubjectMain {
 	}
 
 	// 학과정보
-	private static void subjectMenu() throws SQLException {
+	public static void subjectMenu() {
 		int no;
 		SubjectRegisterManager srm = new SubjectRegisterManager();
 
@@ -157,7 +156,7 @@ public class SubjectMain {
 	}
 
 	// 학생정보
-	private static void studentMenu() throws SQLException {
+	private static void studentMenu() {
 		int no;
 		StudentRegisterManager srm = new StudentRegisterManager();
 
